@@ -9520,7 +9520,10 @@ properly balanced."
     (save-restriction
       (when (eq (sp-point-in-string start) (sp-point-in-string end))
         (narrow-to-region start end)
-        (let ((regex (sp--get-allowed-regexp (-difference sp-pair-list (sp--get-allowed-pair-list)))))
+        (let* ((allowed-pair-list (sp--get-allowed-pair-list))
+               (o-diff (-difference (mapcar 'car sp-pair-list) (mapcar 'car allowed-pair-list)))
+               (c-diff (-difference (mapcar 'cdr sp-pair-list) (mapcar 'cdr allowed-pair-list)))
+               (regex (sp--strict-regexp-opt (append o-diff c-diff))))
           (goto-char (point-min))
           (while (or (prog1 (sp-forward-sexp)
                        (sp-skip-forward-to-symbol))
